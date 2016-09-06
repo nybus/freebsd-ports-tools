@@ -39,14 +39,15 @@ boot1:
 	cd ${PORTS} && ${SVN} up --depth files ports-mgmt
 #
 	cd ${PORTS}/lang && ${SVN} up perl${P5}
-	cd ${PORTS}/ports-mgmt && ${SVN} up pkg porteasy
+	cd ${PORTS}/ports-mgmt && ${SVN} up pkg
+	cd ${PORTS}/ports-mgmt && ${SVN} up porteasy -r r386647
 
 boot2:
 	BATCH=yes make -C ${PORTS}/lang/perl${P5} install clean DEPENDS_CLEAN=YES
 	BATCH=yes make -C ${PORTS}/ports-mgmt/porteasy install clean DEPENDS_CLEAN=YES
 
 boot3:
-	cat patch/porteasy.patch | patch -b '' /usr/local/bin/porteasy
+	cat patch/porteasy.patch | patch -z '' /usr/local/bin/porteasy
 #
 	BATCH=yes porteasy -v -a -r ${CVSROOT} -p ${PORTS} -u -b -e rsync-3
 	BATCH=yes porteasy -v -a -r ${CVSROOT} -p ${PORTS} -u -b -e dialog4ports-0

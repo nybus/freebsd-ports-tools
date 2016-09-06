@@ -54,6 +54,15 @@
  }
  
  #
+@@ -659,7 +645,7 @@
+     foreach $item (@dependlist) {
+ 	$item =~ s|\`([^\`]+)\`|capture(\&cmd, "sh", "-c", $1)|eg;
+ 	1 while ($item =~ s|/[^\./]*/\.\./|/|);
+-	if ($item !~ m|^(?:([^:]+):)?$portsdir/([^/:]+/[^/:]+)/?(:[^:]+)?$|) {
++	if ($item !~ m|^(?:([^:]+):)?([^/:]+/[^/:]+)/?(:[^:]+)?$|) {
+ 	    bsd::warnx("invalid dependency: %s", $item);
+ 	    next;
+ 	}
 @@ -1062,7 +1048,7 @@
  	push(@makeargs, "package");
  	push(@makeargs, "DEPENDS_TARGET=package");
