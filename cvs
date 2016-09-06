@@ -1,0 +1,99 @@
+#!/usr/bin/perl -w
+
+# $Id: cvs,v 1.3 2013/11/07 12:58:42 rmon Exp $
+
+use strict;
+
+use Getopt::Long qw(GetOptions HelpMessage);
+
+use Data::Dumper;
+
+my $nop;
+my $url = '';
+
+my $svn = '/opt/ports/svn';
+
+Getopt::Long::Configure ('require_order', 'bundling');
+
+GetOptions(
+	"f" => \$nop,
+	"z=i" => \$nop,
+	"R" => \$nop,
+	"d=s" => \$url,
+) || HelpMessage(-exitval => 1);
+
+if(scalar(@ARGV) < 1) {
+	HelpMessage(-exitval => 1);
+}
+
+my $op = shift(@ARGV);
+if($op =~ /^(co|checkout)$/) {
+	co();
+} elsif($op =~ /^(up|update)$/) {
+	up();
+} else {
+	print 'ARGV: ', Dumper(\@ARGV), "\n";
+	HelpMessage(-exitval => 1);
+}
+
+sub sh {
+	my $l = shift;
+	print STDERR '>>>> ', join(' ', @$l), "\n";
+	exec(@$l);
+}
+
+sub co {
+	exit(0);
+#	TODO
+#	exit(0) if (-d '.svn');
+	my $nop;
+	my $local;
+	GetOptions(
+		"A" => \$nop,
+		"T" => \$nop,
+		"P" => \$nop,
+		"l" => \$local,
+	) || HelpMessage(-exitval => 1);
+	foreach my $i (@ARGV) {
+		my @l = ($svn, 'co');
+		push(@l, sprintf('%s/%s/head', $url, $i));
+		if($local) {
+			push(@l, '--depth', 'files');
+		}
+		push(@l, '.');
+		sh(\@l);
+	}
+}
+
+sub up {
+	my $nop;
+	my $local;
+	my $revision = undef;
+#	my $revision = '384185';
+	GetOptions(
+		"A" => \$nop,
+		"T" => \$nop,
+		"P" => \$nop,
+		"d" => \$nop,
+		"l" => \$local,
+	) || HelpMessage(-exitval => 1);
+	my @l = ($svn, 'up');
+	if($revision) {
+		push(@l, '-r', $revision);
+	}
+	if($local) {
+		push(@l, '--depth', 'files');
+	}
+	push(@l, @ARGV);
+	sh(\@l);
+}
+
+exit(1);
+
+__END__
+
+=head1 SYNOPSIS
+
+cvs [...]
+
+TODO

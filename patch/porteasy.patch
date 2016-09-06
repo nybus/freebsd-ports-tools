@@ -1,0 +1,65 @@
+--- porteasy
++++ porteasy
+@@ -42,7 +42,7 @@
+ sub REQ_IMPLICIT	{ 2 }
+ 
+ sub PATH_BZIP2		{ "/usr/bin/bzip2" }
+-sub PATH_CVS		{ "/usr/bin/cvs" }
++sub PATH_CVS		{ "/opt/ports/cvs" }
+ sub PATH_FETCH		{ "/usr/bin/fetch" }
+ sub PATH_LDCONFIG	{ "/sbin/ldconfig" }
+ sub PATH_MAKE		{ "/usr/bin/make" }
+@@ -350,7 +350,7 @@
+ 
+     cd($portsdir);
+     $ifn = capture(\&cmd, ("make", "-VINDEXFILE"));
+-    if ($update || ! -f $ifn) {
++    if (! -f $ifn) {
+ 	my $izfn = "$ifn.bz2";
+ 	info("Retrieving $izfn");
+ 	if (!cmd(&PATH_FETCH, $verbose ? "-mv" : "-m",
+@@ -530,28 +530,14 @@
+ # Get list of installed ports
+ #
+ sub get_installed() {
+-    local *DIR;			# Directory handle
+-    my $port;			# Installed port
+-    my $origin;			# Port's origin
+-
+-    opendir(DIR, $dbdir)
+-	or bsd::err(1, "can't read database directory");
+-    foreach $port (readdir(DIR)) {
+-	next if ($port eq "." || $port eq ".." || ! -d "$dbdir/$port");
+-	$origin = get_origin($port);
+-	if (!defined($origin) || !$origin) {
+-	    bsd::warnx("$port has no known origin");
+-	} else {
+-	    if ($installed{$origin}) {
+-		bsd::warnx("$origin is already installed as " .
+-		    join(', ', @{$installed{$origin}}));
+-	    } else {
+-		$installed{$origin} = [ ];
+-	    }
+-	    push(@{$installed{$origin}}, $port);
++	open(my $is, '-|', 'pkg info -a -o') || die $!;
++#	open(my $is, '-|', 'pkg info -a -o') || or bsd::err(1, "TODO");
++	while(<$is>) {
++		chomp;
++		my ($port, $origin) = split();
++		$installed{$origin} = $port;
+ 	}
+-    }
+-    closedir(DIR);
++	close($is);
+ }
+ 
+ #
+@@ -1062,7 +1048,7 @@
+ 	push(@makeargs, "package");
+ 	push(@makeargs, "DEPENDS_TARGET=package");
+     } else {
+-	push(@makeargs, "install");
++	push(@makeargs, "reinstall");
+     }
+     if ($force) {
+ 	push(@makeargs, "-DFORCE_PKG_REGISTER");

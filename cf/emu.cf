@@ -1,0 +1,4 @@
+# $Id: emu.cf,v 1.1 2012/11/27 12:56:51 rmon Exp $
+
+#virtualbox-ose-4
+emulators/virtualbox-ose

@@ -1,0 +1,13 @@
+# $Id: make.conf.ports,v 1.16 2014/12/26 14:13:02 rmon Exp $
+
+#BATCH=yes
+##NO_STAGE=yes
+
+OPTIONS_UNSET=NLS X11
+
+_FNS != echo /etc/make.conf.d/*.conf
+.for __FN in ${_FNS}
+. if exists(${__FN})
+.  include "${__FN}"
+. endif
+.endfor

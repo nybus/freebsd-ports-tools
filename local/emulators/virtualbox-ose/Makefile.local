@@ -1,0 +1,3 @@
+# $Id: Makefile.local,v 1.1 2014/12/18 15:18:21 rmon Exp $
+
+RUN_DEPENDS:=${RUN_DEPENDS:Ncdrecord*}
